@@ -1,0 +1,152 @@
+var score = 0;
+var health = 5;
+var bunnyCount = 0;
+var moleX =["15", "120", "225"];
+var bunnyX =["15", "120", "225"];
+var moleY = ["220", "280", "335"];
+var bunnyY = ["220", "280", "335"];
+
+moleAppear("mole1", randomNumber(2000, 3000));
+moleHide("mole1", randomNumber(3000, 4000));
+moleAppear("mole2", randomNumber(2000, 2500));
+moleHide("mole2", randomNumber(3000, 4000));
+bunnyAppear();
+
+onEvent("playButton", "click", function() {
+  setScreen("gameScreen");
+  setText("countdownLabel", "30");
+  setText("score", "0");
+  var countdown = 30;
+  var i = setInterval(function() {
+  countdown = countdown - 1;
+  setText("countdownLabel", countdown);
+  if(countdown === 0) {
+  clearInterval(i);
+  setScreen("endScreen");
+  }
+  }, 1000);
+  setText("countdownLabel", 30);
+  setText("scoreArea", "Your total score is: " + score);
+});
+
+onEvent("mole1", "click", function() {
+  moleClick("mole1");
+});
+
+onEvent("mole2", "click", function() {
+  moleClick("mole2");
+});
+
+onEvent("bunny", "click", function() {
+  bunnyClick();
+  hideElement("bunny");
+});
+
+onEvent("replayButton", "click", function() {
+  setScreen("introScreen");
+  reset();
+});
+
+function bunnyAppear() {
+  var intervalBunny = setInterval(function(){
+  showElement("bunny");
+  setPosition("bunny", bunnyX[randomNumber(0,2)], bunnyY[randomNumber(0,2)]);
+  bunnyCount = bunnyCount + 1;
+  if (bunnyCount == 100) clearInterval(intervalBunny);
+}, 1500);
+}
+
+function moleClick(mole) {
+  hideElement(mole);
+  score = score + 1;
+  setText("score", score);
+  setText("scoreArea", "Your total score is: " + score);
+}
+
+function moleAppear(mole, milliseconds) {
+ var intervalMole = setInterval(function(){
+  var moleCount = 0;
+  showElement(mole);
+  setPosition(mole, moleX[randomNumber(0,2)], moleY[randomNumber(0,2)]);
+  moleCount = moleCount + 1;
+  if (moleCount == 100) clearInterval(intervalMole);
+  if (getXPosition(mole) == getXPosition("bunny") && getYPosition(mole) == getYPosition("bunny")) {
+  hideElement("bunny");
+  }
+}, milliseconds); 
+}
+
+function moleHide(mole, milliseconds) {
+ var intervalMole = setInterval(function(){
+  var moleCount = 0;
+  hideElement(mole);
+  setPosition(mole, moleX[randomNumber(0,2)], moleY[randomNumber(0,2)]);
+  moleCount = moleCount + 1;
+  if (moleCount == 100) clearInterval(intervalMole);
+  if (getXPosition(mole) == getXPosition("bunny") && getYPosition(mole) == getYPosition("bunny")) {
+  hideElement("bunny");
+  }
+ }, milliseconds);
+}
+
+function bunnyClick() {
+  health = health - 1;
+  score = score - 3;
+  if (score < 0) {
+  score = 0;
+  }
+  setText("score", score);
+  setText("scoreArea", "Your total score is: " + score);
+  healthBar();
+  bunnyRandomlyHide();
+}
+
+function healthBar() {
+  if (health == 4) {
+    hideElement("health5");
+    showElement("health4");
+    hideElement("health3");
+    hideElement("health2");
+    hideElement("health1");
+  } else if (health == 3) {
+    hideElement("health5");
+    hideElement("health4");
+    showElement("health3");
+    hideElement("health2");
+    hideElement("health1");
+  } else if (health == 2) {
+    hideElement("health5");
+    hideElement("health4");
+    hideElement("health3");
+    showElement("health2");
+    hideElement("health1");
+  } else if (health == 1) {
+    hideElement("health5");
+    hideElement("health4");
+    hideElement("health3");
+    hideElement("health2");
+    showElement("health1");
+  } else if (health === 0) {
+    setScreen("endScreen");
+  }
+}
+
+function bunnyRandomlyHide() {
+  var intervalBunny = setInterval(function(){
+    hideElement("bunny");
+    setPosition("bunny", bunnyX[randomNumber(0,2)], bunnyY[randomNumber(0,2)]);
+    bunnyCount = bunnyCount + 1;
+    if (bunnyCount == 100) clearInterval(intervalBunny);
+  }, randomNumber(4000, 6000));
+}
+
+function reset() {
+  showElement("health5");
+  hideElement("health4");
+  hideElement("health3");
+  hideElement("health2");
+  hideElement("health1");
+  setText("scoreArea", "");
+  score = 0;
+  health = 5;
+}
